@@ -41,6 +41,9 @@ module Yast
 
       # Current stage
       @_stage = nil
+
+      # 2nd stage needed?
+      @second_stage_required = false
     end
 
     # Get the current stage
@@ -116,6 +119,23 @@ module Yast
       stage == "hardware_probed"
     end
 
+    # The second installation stage is now optional (needed only in some specific
+    # cases like Autoyast) and usually not required
+    #
+    # This function returns the flag idicating whether the second stage is needed
+    #
+    # @return [Boolean] true if the 2nd stage is required
+    def is_second_stage_required
+      @second_stage_required
+    end
+
+    # This function sets the flag idicating whether the 2nd stage is needed
+    # @param [Boolean] required Use 'true' to enable the 2nd stage
+    def second_stage_required(required)
+      @second_stage_required = !!required
+      Builtins.y2milestone "%1 second installation stage", @second_stage_required ? "Enabling" : "Disabling"
+    end
+
     publish :function => :stage, :type => "string ()"
     publish :function => :Set, :type => "void (string)"
     publish :function => :initial, :type => "boolean ()"
@@ -123,6 +143,8 @@ module Yast
     publish :function => :firstboot, :type => "boolean ()"
     publish :function => :normal, :type => "boolean ()"
     publish :function => :reprobe, :type => "boolean ()"
+    publish :function => :is_second_stage_required, :type => "boolean ()"
+    publish :function => :second_stage_required, :type => "void (boolean)"
   end
 
   Stage = StageClass.new
